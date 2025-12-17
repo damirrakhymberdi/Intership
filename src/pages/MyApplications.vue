@@ -1,0 +1,201 @@
+<template>
+    <div class="page">
+      <div class="container">
+        <h1>Менің өтінімдерім</h1>
+        
+        <div v-if="apps.length === 0" class="empty">
+          Әзірге өтінімдер жоқ
+        </div>
+  
+        <div v-else class="list">
+          <div v-for="app in apps" :key="app.id" class="card">
+            <div class="card-header">
+              <h3>{{ app.internshipTitle }}</h3>
+              <span :class="['status', app.status]">
+                {{ statusLabel(app.status) }}
+              </span>
+            </div>
+            <div class="card-body">
+              <div class="info">
+                <span class="label">Компания:</span>
+                <span class="value">{{ app.internshipCompanyName }}</span>
+              </div>
+              <div class="info">
+                <span class="label">Жіберілген күні:</span>
+                <span class="value">{{ formatDate(app.createdAt) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+  
+  <script setup>
+  import { computed, onMounted } from 'vue'
+  import { useApplicationsStore } from '@/stores/applicationsStore'
+  import { useAuthStore } from '@/stores/authStore'
+  
+  const appsStore = useApplicationsStore()
+  const auth = useAuthStore()
+  
+  const apps = computed(() =>
+    appsStore.list.filter((a) => String(a.studentId) === String(auth.user?.id))
+  )
+  
+  const statusLabel = (s) => {
+    if (s === 'accepted') return 'Қабылданды'
+    if (s === 'rejected') return 'Қабылданбады'
+    return 'Күтуде'
+  }
+  
+  const formatDate = (dateStr) => {
+    if (!dateStr) return '-'
+    const date = new Date(dateStr)
+    return date.toLocaleDateString('kk-KZ')
+  }
+  
+  onMounted(() => {
+    if (!auth.isAuthenticated) auth.loadFromStorage()
+    appsStore.loadFromStorage()
+  })
+  </script>
+  
+  <style scoped>
+  .page {
+    min-height: 100vh;
+    background: #fafafa;
+    padding: 2rem 1rem;
+  }
+  
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  
+  h1 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #111;
+    margin: 0 0 1.5rem;
+  }
+  
+  .empty {
+    text-align: center;
+    padding: 3rem;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e5e5e5;
+    color: #666;
+  }
+  
+  .list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .card {
+    background: white;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 1.5rem;
+    transition: border-color 0.2s;
+  }
+  
+  .card:hover {
+    border-color: #d1d5db;
+  }
+  
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  
+  .card-header h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #111;
+    margin: 0;
+    line-height: 1.4;
+  }
+  
+  .status {
+    display: inline-block;
+    padding: 0.35rem 0.8rem;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  
+  .status.accepted {
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
+  
+  .status.rejected {
+    background: #ffebee;
+    color: #c62828;
+  }
+  
+  .status.pending {
+    background: #f5f5f5;
+    color: #666;
+  }
+  
+  .card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .label {
+    font-size: 0.9rem;
+    color: #666;
+  }
+  
+  .value {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #111;
+  }
+  
+  @media (max-width: 640px) {
+    .page {
+      padding: 1rem;
+    }
+  
+    h1 {
+      font-size: 1.5rem;
+    }
+  
+    .card {
+      padding: 1.25rem;
+    }
+  
+    .card-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .info {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.25rem;
+    }
+  }
+  </style>
