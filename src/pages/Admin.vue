@@ -1,60 +1,40 @@
 <template>
   <div class="page">
     <div class="container">
-      <div class="header">
-        <h1>Админ панель</h1>
-        <div class="toolbar">
-          <button @click="refresh" :disabled="loading" class="btn-refresh">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="23 4 23 10 17 10"></polyline>
-              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
-            </svg>
-            Жаңарту
-          </button>
-          <span v-if="loading" class="status loading">Жүктелуде...</span>
-          <span v-if="message" class="status success">{{ message }}</span>
-          <span v-if="error" class="status error">{{ error }}</span>
-        </div>
-      </div>
+      
 
-      <div class="table-wrapper">
+      <div class="table-container">
         <table>
           <thead>
             <tr>
               <th>ID</th>
-              <th>Атауы</th>
-              <th>Компания</th>
-              <th>Түрі</th>
-              <th>Статус</th>
-              <th>Компания ID</th>
-              <th>Әрекеттер</th>
+              <th>Title</th>
+              <th>Company</th>
+              <th>Type</th>
+              <th>Status</th>
+              <th>Company ID</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="item in tasks" :key="item.id">
-              <td><span class="id">#{{ item.id }}</span></td>
-              <td class="title">{{ item.title }}</td>
+              <td>{{ item.id }}</td>
+              <td>{{ item.title }}</td>
               <td>{{ item.companyName }}</td>
+              <td>{{ item.type === 'online' ? 'Online' : 'Offline' }}</td>
               <td>
-                <span :class="['badge', item.type]">
-                  {{ item.type === 'online' ? 'Онлайн' : 'Оффлайн' }}
+                <span :class="['status-badge', item.status]">
+                  {{ item.status === 'active' ? 'Active' : 'Closed' }}
                 </span>
               </td>
-              <td>
-                <span :class="['badge', item.status]">
-                  {{ item.status === 'active' ? 'Белсенді' : 'Жабық' }}
-                </span>
-              </td>
-              <td>#{{ item.companyId }}</td>
+              <td>{{ item.companyId }}</td>
               <td class="actions">
-                <button @click="open(item.id)" class="btn-open">Ашу</button>
-                <button @click="remove(item.id)" :disabled="loading" class="btn-delete">
-                  Жою
-                </button>
+                <button @click="open(item.id)" class="btn-open">Open</button>
+                <button @click="remove(item.id)" :disabled="loading" class="btn-delete">Delete</button>
               </td>
             </tr>
             <tr v-if="!loading && tasks.length === 0">
-              <td colspan="7" class="empty">Жазбалар жоқ</td>
+              <td colspan="7" class="empty">No records found</td>
             </tr>
           </tbody>
         </table>
@@ -81,13 +61,13 @@ const message = ref('')
 const refresh = async () => {
   message.value = ''
   await tasksStore.loadList()
-  message.value = 'Жаңартылды'
+  message.value = 'Refreshed'
 }
 
 const remove = async (id) => {
-  if (!confirm('Жазбаны жою керек пе?')) return
+  if (!confirm('Are you sure you want to delete this record?')) return
   await tasksStore.remove(id)
-  message.value = 'Жойылды'
+  message.value = 'Deleted successfully'
 }
 
 const open = (id) => router.push(`/items/${id}`)
@@ -101,12 +81,12 @@ onMounted(() => {
 <style scoped>
 .page {
   min-height: 100vh;
-  background: #fafafa;
-  padding: 2rem 1rem;
+  background: #f5f5f5;
+  padding: 15px 0;
 }
 
 .container {
-  max-width: 1400px;
+  max-width: 1500px;
   margin: 0 auto;
 }
 
@@ -114,7 +94,7 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
   flex-wrap: wrap;
   gap: 1rem;
 }
@@ -122,7 +102,7 @@ onMounted(() => {
 h1 {
   font-size: 1.75rem;
   font-weight: 600;
-  color: #111;
+  color: #000;
   margin: 0;
 }
 
@@ -137,18 +117,16 @@ h1 {
   align-items: center;
   gap: 0.5rem;
   padding: 0.6rem 1rem;
-  background: #2563eb;
-  color: white;
-  border: none;
-  border-radius: 6px;
+  background: #000;
+  color: #fff;
+  border: 1px solid #000;
+  border-radius: 4px;
   font-size: 0.9rem;
-  font-weight: 500;
   cursor: pointer;
-  transition: background 0.2s;
 }
 
 .btn-refresh:hover:not(:disabled) {
-  background: #1d4ed8;
+  background: #333;
 }
 
 .btn-refresh:disabled {
@@ -162,31 +140,30 @@ h1 {
 }
 
 .status {
-  padding: 0.4rem 0.8rem;
-  border-radius: 5px;
+  padding: 0.5rem 0.8rem;
+  border-radius: 4px;
   font-size: 0.85rem;
-  font-weight: 500;
 }
 
 .status.loading {
-  background: #f0f0f0;
+  background: #e0e0e0;
   color: #666;
 }
 
 .status.success {
-  background: #e8f5e9;
-  color: #2e7d32;
+  background: #22c55e;
+  color: #fff;
 }
 
 .status.error {
-  background: #ffebee;
-  color: #c62828;
+  background: #ef4444;
+  color: #fff;
 }
 
-.table-wrapper {
-  background: white;
-  border-radius: 8px;
-  border: 1px solid #e5e5e5;
+.table-container {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
   overflow: hidden;
 }
 
@@ -196,23 +173,23 @@ table {
 }
 
 thead {
-  background: #f9fafb;
+  background: #f9f9f9;
+  border-bottom: 2px solid #ddd;
 }
 
 th {
-  padding: 0.85rem 1rem;
+  padding: 1rem;
   text-align: left;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: 600;
-  color: #555;
-  border-bottom: 1px solid #e5e5e5;
+  color: #333;
 }
 
 td {
   padding: 1rem;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #e5e5e5;
   font-size: 0.9rem;
-  color: #333;
+  color: #000;
 }
 
 tbody tr:last-child td {
@@ -223,42 +200,22 @@ tbody tr:hover {
   background: #fafafa;
 }
 
-.id {
-  color: #2563eb;
-  font-weight: 500;
-}
-
-.title {
-  font-weight: 500;
-  color: #111;
-}
-
-.badge {
+.status-badge {
   display: inline-block;
-  padding: 0.3rem 0.7rem;
-  border-radius: 5px;
-  font-size: 0.75rem;
-  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
 }
 
-.badge.online {
-  background: #dbeafe;
-  color: #1e40af;
+.status-badge.active {
+  background: #22c55e;
+  color: #fff;
 }
 
-.badge.offline {
-  background: #f3e8ff;
-  color: #6b21a8;
-}
-
-.badge.active {
-  background: #dcfce7;
-  color: #166534;
-}
-
-.badge.closed {
-  background: #fee;
-  color: #991b1b;
+.status-badge.closed {
+  background: #666;
+  color: #fff;
 }
 
 .actions {
@@ -268,35 +225,37 @@ tbody tr:hover {
 
 .btn-open,
 .btn-delete {
-  padding: 0.45rem 0.85rem;
-  border: none;
-  border-radius: 5px;
-  font-size: 0.8rem;
-  font-weight: 500;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid;
+  border-radius: 4px;
+  font-size: 0.85rem;
   cursor: pointer;
-  transition: all 0.2s;
 }
 
 .btn-open {
-  background: #2563eb;
-  color: white;
+  background: #fff;
+  border-color: #000;
+  color: #000;
 }
 
 .btn-open:hover {
-  background: #1d4ed8;
+  background: #000;
+  color: #fff;
 }
 
 .btn-delete {
-  background: #ef4444;
-  color: white;
+  background: #fff;
+  border-color: #000;
+  color: #000;
 }
 
 .btn-delete:hover:not(:disabled) {
-  background: #dc2626;
+  background: #000;
+  color: #fff;
 }
 
 .btn-delete:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
@@ -307,7 +266,7 @@ tbody tr:hover {
 }
 
 @media (max-width: 1200px) {
-  .table-wrapper {
+  .table-container {
     overflow-x: auto;
   }
 
@@ -326,12 +285,8 @@ tbody tr:hover {
     align-items: flex-start;
   }
 
-  h1 {
-    font-size: 1.5rem;
-  }
-
   th, td {
-    padding: 0.65rem;
+    padding: 0.75rem;
     font-size: 0.85rem;
   }
 

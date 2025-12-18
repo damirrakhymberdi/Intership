@@ -1,10 +1,10 @@
 <template>
     <div class="page">
       <div class="container">
-        <h1>Менің өтінімдерім</h1>
+        <h1>My applications</h1>
         
         <div v-if="apps.length === 0" class="empty">
-          Әзірге өтінімдер жоқ
+          No applications yet
         </div>
   
         <div v-else class="list">
@@ -17,11 +17,11 @@
             </div>
             <div class="card-body">
               <div class="info">
-                <span class="label">Компания:</span>
+                <span class="label">Company:</span>
                 <span class="value">{{ app.internshipCompanyName }}</span>
               </div>
               <div class="info">
-                <span class="label">Жіберілген күні:</span>
+                <span class="label">Sent date:</span>
                 <span class="value">{{ formatDate(app.createdAt) }}</span>
               </div>
             </div>
@@ -44,9 +44,9 @@
   )
   
   const statusLabel = (s) => {
-    if (s === 'accepted') return 'Қабылданды'
-    if (s === 'rejected') return 'Қабылданбады'
-    return 'Күтуде'
+    if (s === 'accepted') return 'Accepted'
+    if (s === 'rejected') return 'Rejected'
+    return 'Pending'
   }
   
   const formatDate = (dateStr) => {
@@ -64,12 +64,12 @@
   <style scoped>
   .page {
     min-height: 100vh;
-    background: #fafafa;
+    background: #ebebeb;
     padding: 2rem 1rem;
   }
   
   .container {
-    max-width: 900px;
+    max-width: 1100px;
     margin: 0 auto;
   }
   
@@ -90,15 +90,15 @@
   }
   
   .list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .5rem;
   }
   
   .card {
     background: white;
-    border: 1px solid #e5e5e5;
-    border-radius: 8px;
+    border: none;
+    border-radius: 5px;
     padding: 1.5rem;
     transition: border-color 0.2s;
   }
@@ -175,6 +175,10 @@
   }
   
   @media (max-width: 640px) {
+    .list {
+      grid-template-columns: 1fr;
+    }
+
     .page {
       padding: 1rem;
     }

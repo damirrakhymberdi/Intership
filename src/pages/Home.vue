@@ -3,14 +3,14 @@
     <section class="hero">
       <div class="hero-content">
         <p class="eyebrow">Internship & Practice Portal</p>
-        <h1>Найди свою практику в лучших компаниях</h1>
+        <h1>Find your internship at top companies</h1>
         <p class="lead">
-          Единая платформа для поиска стажировок и практик. Проверенные работодатели, актуальные предложения, простой отклик.
+          One platform to find internships and placements. Verified employers, up-to-date listings, and an easy application process.
         </p>
         <div class="actions">
           <button class="btn-primary" @click="goPrimary">{{ ctaLabel }}</button>
           <button v-if="!auth.isAuthenticated" class="btn-secondary" @click="goLogin">
-            Войти
+            Sign in
           </button>
         </div>
       </div>
@@ -19,21 +19,21 @@
     <section class="stats">
       <div class="stat-item">
         <div class="stat-number">500+</div>
-        <div class="stat-label">Студентов</div>
+        <div class="stat-label">Students</div>
       </div>
       <div class="stat-item">
         <div class="stat-number">150+</div>
-        <div class="stat-label">Компаний</div>
+        <div class="stat-label">Companies</div>
       </div>
       <div class="stat-item">
         <div class="stat-number">1000+</div>
-        <div class="stat-label">Откликов</div>
+        <div class="stat-label">Applications</div>
       </div>
     </section>
 
     <section class="problem">
       <div class="section-header">
-        <h2>Почему это нужно</h2>
+        <h2>Why it matters</h2>
       </div>
       <div class="problem-grid">
         <div class="problem-card">
@@ -44,7 +44,7 @@
               <line x1="9" y1="9" x2="15" y2="15"></line>
             </svg>
           </div>
-          <h3>Практику ищут по чатам и слухам</h3>
+          <h3>People search through chats and word of mouth</h3>
         </div>
         <div class="problem-card">
           <div class="icon-wrapper red">
@@ -54,7 +54,7 @@
               <line x1="9" y1="9" x2="15" y2="15"></line>
             </svg>
           </div>
-          <h3>Нет единой базы предложений</h3>
+          <h3>There is no single source of opportunities</h3>
         </div>
         <div class="problem-card">
           <div class="icon-wrapper red">
@@ -64,12 +64,12 @@
               <line x1="9" y1="9" x2="15" y2="15"></line>
             </svg>
           </div>
-          <h3>Трудно понять, где актуально</h3>
+          <h3>It’s hard to know what’s actually up to date</h3>
         </div>
       </div>
 
       <div class="section-header solution">
-        <h2>Наше решение</h2>
+        <h2>Our solution</h2>
       </div>
       <div class="solution-grid">
         <div class="solution-card">
@@ -79,7 +79,7 @@
               <polyline points="22 4 12 14.01 9 11.01"></polyline>
             </svg>
           </div>
-          <h3>Одна платформа для всех предложений</h3>
+          <h3>One platform for all internship opportunities</h3>
         </div>
         <div class="solution-card">
           <div class="icon-wrapper green">
@@ -88,7 +88,7 @@
               <polyline points="22 4 12 14.01 9 11.01"></polyline>
             </svg>
           </div>
-          <h3>Фильтры по типу, статусу, компании</h3>
+          <h3>Filters by type, status, and company</h3>
         </div>
         <div class="solution-card">
           <div class="icon-wrapper green">
@@ -97,40 +97,40 @@
               <polyline points="22 4 12 14.01 9 11.01"></polyline>
             </svg>
           </div>
-          <h3>Простой отклик и контроль заявок</h3>
+          <h3>Apply in one click and track your applications</h3>
         </div>
       </div>
     </section>
 
     <section class="steps">
       <div class="section-header">
-        <h2>Как это работает</h2>
-        <p>Три простых шага к твоей практике</p>
+        <h2>How it works</h2>
+        <p>Three simple steps to your internship</p>
       </div>
       <div class="steps-grid">
         <div class="step-card">
           <div class="step-number">1</div>
-          <h3>Авторизуешься</h3>
-          <p>Создай аккаунт за минуту и получи доступ ко всем предложениям</p>
+          <h3>Sign in</h3>
+          <p>Create an account in a minute and access all opportunities</p>
         </div>
         <div class="step-card">
           <div class="step-number">2</div>
-          <h3>Выбираешь стажировку</h3>
-          <p>Используй фильтры и найди идеальный вариант для себя</p>
+          <h3>Choose an internship</h3>
+          <p>Use filters to find the best match for you</p>
         </div>
         <div class="step-card">
           <div class="step-number">3</div>
-          <h3>Откликаешься и отслеживаешь статус</h3>
-          <p>Отправь заявку одним кликом и следи за откликами</p>
+          <h3>Apply and track status</h3>
+          <p>Submit an application in one click and track updates</p>
         </div>
       </div>
     </section>
 
     <section class="cta">
       <div class="cta-content">
-        <h2>Готов начать поиск практики?</h2>
-        <p>Присоединяйся к сотням студентов, которые уже нашли свою практику</p>
-        <button class="btn-cta" @click="goPrimary">Перейти к списку практик</button>
+        <h2>Ready to start your internship search?</h2>
+        <p>Join hundreds of students who have already found their internships</p>
+        <button class="btn-cta" @click="goPrimary">Browse internships</button>
       </div>
     </section>
   </div>
@@ -145,7 +145,7 @@ const router = useRouter()
 const auth = useAuthStore()
 
 const ctaLabel = computed(() =>
-  auth.isAuthenticated ? 'Открыть практики' : 'Найти практику'
+  auth.isAuthenticated ? 'Browse internships' : 'Find an internship'
 )
 
 const goPrimary = () => {

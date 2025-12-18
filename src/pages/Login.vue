@@ -39,9 +39,6 @@
               placeholder="••••••••"
               required
             />
-            <div class="forgot-password">
-              <a href="#" @click.prevent="forgotPassword">Forgot your password?</a>
-            </div>
           </div>
 
           <button type="submit" :disabled="loading" class="submit-btn">
@@ -56,9 +53,7 @@
           </transition>
         </form>
 
-        <div class="signup-link">
-          Don't have an account? <a href="#" @click.prevent="signUp">Sign up</a>
-        </div>
+        
       </div>
     </div>
   </div>
@@ -196,7 +191,7 @@ const signUp = () => {
 
 .logo h2 {
   font-size: 28px;
-  color: #667eea;
+  color: #4caf4f;
   font-weight: 700;
   margin-bottom: 8px;
 }
@@ -253,8 +248,8 @@ input {
 }
 
 input:focus {
-  border-color: #667eea;
-  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  border-color: #4caf4f;
+  box-shadow: 0 0 0 4px rgba(76, 175, 79, 0.16);
 }
 
 input::placeholder {
@@ -267,21 +262,21 @@ input::placeholder {
 }
 
 .forgot-password a {
-  color: #667eea;
+  color: #2e7d32;
   text-decoration: none;
   font-size: 14px;
   transition: color 0.3s;
 }
 
 .forgot-password a:hover {
-  color: #764ba2;
+  color: #1b5e20;
   text-decoration: underline;
 }
 
 .submit-btn {
   width: 100%;
   padding: 16px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #4caf4f 0%, #2e7d32 100%);
   color: white;
   border: none;
   border-radius: 10px;
@@ -297,7 +292,7 @@ input::placeholder {
 
 .submit-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 8px 20px rgba(76, 175, 79, 0.35);
 }
 
 .submit-btn:active:not(:disabled) {
@@ -357,14 +352,14 @@ input::placeholder {
 }
 
 .signup-link a {
-  color: #667eea;
+  color: #2e7d32;
   text-decoration: none;
   font-weight: 600;
   transition: color 0.3s;
 }
 
 .signup-link a:hover {
-  color: #764ba2;
+  color: #1b5e20;
   text-decoration: underline;
 }
 
