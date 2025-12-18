@@ -53,9 +53,59 @@
           </transition>
         </form>
 
-        
+        <div class="signup-link">
+          Not registered yet?
+          <button class="link-btn" type="button" @click="openRegister">Sign up</button>
+        </div>
       </div>
     </div>
+
+    <!-- Register Modal -->
+    <transition name="modal-fade">
+      <div v-if="registerOpen" class="modal-backdrop" @click.self="closeRegister">
+        <div class="modal">
+          <div class="modal-header">
+            <h2>Sign up</h2>
+            <button class="modal-close" type="button" @click="closeRegister" aria-label="Close">×</button>
+          </div>
+
+          <form class="modal-form" @submit.prevent="onRegister">
+            <div class="field">
+              <label>Email Address</label>
+              <input v-model="regEmail" type="email" placeholder="you@gmail.com" required autocomplete="email" />
+            </div>
+
+            <div class="field">
+              <label>Create password</label>
+              <input
+                v-model="regPassword"
+                type="password"
+                placeholder="••••••••"
+                required
+                minlength="6"
+                autocomplete="new-password"
+              />
+            </div>
+
+            <button type="submit" :disabled="regLoading" class="submit-btn">
+              <span v-if="regLoading" class="loader"></span>
+              <span v-else>Create account</span>
+            </button>
+
+            <transition name="error-fade">
+              <div v-if="regError" class="error-message">
+                {{ regError }}
+              </div>
+            </transition>
+
+            <div class="switch-auth">
+              Already registered?
+              <button class="link-btn" type="button" @click="closeRegister">Sign in</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -78,6 +128,12 @@ const password = ref('')
 const loading = ref(false)
 const error = ref(null)
 
+const registerOpen = ref(false)
+const regEmail = ref('')
+const regPassword = ref('')
+const regLoading = ref(false)
+const regError = ref(null)
+
 const onSubmit = async () => {
   loading.value = true
   error.value = null
@@ -92,14 +148,29 @@ const onSubmit = async () => {
   }
 }
 
-const forgotPassword = () => {
-  // Парол қалпына келтіру
-  router.push('/forgot-password')
+const openRegister = () => {
+  regError.value = null
+  regEmail.value = email.value || ''
+  regPassword.value = ''
+  registerOpen.value = true
 }
 
-const signUp = () => {
-  // Тіркелу бетіне өту
-  router.push('/signup')
+const closeRegister = () => {
+  registerOpen.value = false
+}
+
+const onRegister = async () => {
+  regLoading.value = true
+  regError.value = null
+  try {
+    await auth.register(regEmail.value, regPassword.value)
+    closeRegister()
+    router.push('/items')
+  } catch (e) {
+    regError.value = e?.message || 'Registration failed'
+  } finally {
+    regLoading.value = false
+  }
 }
 </script>
 
@@ -256,23 +327,6 @@ input::placeholder {
   color: #aaa;
 }
 
-.forgot-password {
-  text-align: right;
-  margin-top: 4px;
-}
-
-.forgot-password a {
-  color: #2e7d32;
-  text-decoration: none;
-  font-size: 14px;
-  transition: color 0.3s;
-}
-
-.forgot-password a:hover {
-  color: #1b5e20;
-  text-decoration: underline;
-}
-
 .submit-btn {
   width: 100%;
   padding: 16px;
@@ -351,16 +405,93 @@ input::placeholder {
   font-size: 14px;
 }
 
-.signup-link a {
+.link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  margin-left: 6px;
   color: #2e7d32;
-  text-decoration: none;
   font-weight: 600;
+  font-size: 14px;
   transition: color 0.3s;
+  cursor: pointer;
 }
 
-.signup-link a:hover {
+.link-btn:hover {
   color: #1b5e20;
   text-decoration: underline;
+}
+
+/* Modal */
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.modal-fade-enter-from,
+.modal-fade-leave-to {
+  opacity: 0;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 200;
+}
+
+.modal {
+  width: min(520px, 100%);
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 18px;
+  color: #111;
+}
+
+.modal-close {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: none;
+  background: #f3f4f6;
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+  color: #111;
+}
+
+.modal-close:hover {
+  background: #e5e7eb;
+}
+
+.modal-form {
+  padding: 18px;
+  display: grid;
+  gap: 16px;
+}
+
+.switch-auth {
+  text-align: center;
+  color: #666;
+  font-size: 14px;
 }
 
 /* Responsive */

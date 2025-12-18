@@ -35,11 +35,27 @@
       <!-- Оң жақ - ақпарат -->
       <div class="info-section">
         <div class="info-card">
-          <h3>Personal information</h3>
+          <div class="info-header">
+            <h3>Personal information</h3>
+            <div class="info-actions">
+              <button v-if="!editing" class="btn-edit" type="button" @click="startEdit">
+                Edit profile
+              </button>
+              <template v-else>
+                <button class="btn-save" type="button" @click="saveEdit">Save</button>
+                <button class="btn-cancel" type="button" @click="cancelEdit">Cancel</button>
+              </template>
+            </div>
+          </div>
           <div class="info-grid">
             <div class="info-row">
               <span class="label">Full name</span>
-              <span class="value">{{ user?.name || '-' }}</span>
+              <span class="value">
+                <template v-if="editing">
+                  <input v-model="draft.name" type="text" placeholder="Full name" />
+                </template>
+                <template v-else>{{ user?.name || '-' }}</template>
+              </span>
             </div>
             <div class="info-row">
               <span class="label">Email</span>
@@ -47,11 +63,25 @@
             </div>
             <div class="info-row">
               <span class="label">Role</span>
-              <span class="value">{{ getRoleName(user?.role) }}</span>
+              <span class="value">
+                <template v-if="editing && canEditRole">
+                  <select v-model="draft.role">
+                    <option value="student">Student</option>
+                    <option value="company">Company</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                </template>
+                <template v-else>{{ getRoleName(user?.role) }}</template>
+              </span>
             </div>
-            <div v-if="user?.companyName" class="info-row">
-              <span class="label">Company</span>
-              <span class="value">{{ user.companyName }}</span>
+            <div v-if="showCompanyRow" class="info-row">
+              <span class="label">Your company</span>
+              <span class="value">
+                <template v-if="editing">
+                  <input v-model="draft.companyName" type="text" placeholder="Company name" />
+                </template>
+                <template v-else>{{ user?.companyName || '-' }}</template>
+              </span>
             </div>
             <div class="info-row">
               <span class="label">User ID</span>
@@ -65,12 +95,35 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
 
 const auth = useAuthStore()
 
 const user = computed(() => auth.user)
+const editing = ref(false)
+const draft = reactive({
+  name: '',
+  role: 'student',
+  companyName: '',
+})
+
+const syncDraft = () => {
+  draft.name = user.value?.name || ''
+  draft.role = user.value?.role || 'student'
+  draft.companyName = user.value?.companyName || ''
+}
+
+const canEditRole = computed(() => user.value?.role === 'admin')
+
+const showCompanyRow = computed(() => {
+  // Students never see company field.
+  // Company users can edit "Your company".
+  // Admin can see it only if they switch role to company (optional).
+  const baseRole = user.value?.role
+  const role = editing.value && canEditRole.value ? draft.role : baseRole
+  return role === 'company'
+})
 
 const getRoleName = (role) => {
   const roles = { 
@@ -83,7 +136,41 @@ const getRoleName = (role) => {
 
 onMounted(() => {
   if (!auth.isAuthenticated) auth.loadFromStorage()
+  syncDraft()
 })
+
+watch(user, syncDraft)
+
+watch(
+  () => draft.role,
+  (r) => {
+    if (r === 'student') draft.companyName = ''
+  }
+)
+
+const startEdit = () => {
+  syncDraft()
+  editing.value = true
+}
+
+const cancelEdit = () => {
+  editing.value = false
+  syncDraft()
+}
+
+const saveEdit = () => {
+  const baseRole = user.value?.role || 'student'
+  const nextRole = canEditRole.value ? draft.role : baseRole
+  const nextCompanyName =
+    nextRole === 'company' ? (draft.companyName?.trim() || '') : undefined
+
+  auth.updateProfile({
+    name: draft.name?.trim() || 'User',
+    ...(canEditRole.value ? { role: nextRole } : {}),
+    companyName: nextCompanyName,
+  })
+  editing.value = false
+}
 </script>
 
 <style scoped>
@@ -232,13 +319,52 @@ onMounted(() => {
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
+.info-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 25px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
 .info-card h3 {
   font-size: 20px;
   font-weight: 600;
   color: #333;
-  margin: 0 0 25px;
-  padding-bottom: 15px;
-  border-bottom: 2px solid #f0f0f0;
+  margin: 0;
+}
+
+.info-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-edit,
+.btn-save,
+.btn-cancel {
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-edit {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.btn-save {
+  background: #4caf4f;
+  color: white;
+}
+
+.btn-cancel {
+  background: #f3f4f6;
+  color: #111;
 }
 
 .info-grid {
@@ -269,6 +395,23 @@ onMounted(() => {
   color: #333;
   font-weight: 600;
   text-align: right;
+}
+
+.info-row .value input,
+.info-row .value select {
+  width: min(360px, 100%);
+  padding: 8px 10px;
+  border: 1px solid #e5e5e5;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  outline: none;
+}
+
+.info-row .value input:focus,
+.info-row .value select:focus {
+  border-color: #4caf4f;
+  box-shadow: 0 0 0 3px rgba(76, 175, 79, 0.12);
 }
 
 @media (max-width: 1024px) {

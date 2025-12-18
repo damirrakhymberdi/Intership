@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { loginRequest } from '@/api/auth'
+import { loginRequest, registerRequest } from '@/api/auth'
 
 const TOKEN_KEY = 'token'
 const USER_KEY = 'user'
@@ -45,6 +45,36 @@ export const useAuthStore = defineStore('auth', {
             } finally {
                 this.loading = false
             }
+        },
+        async register(email, password) {
+            this.loading = true
+            this.error = null
+            try {
+                const { token, user } = await registerRequest(email, password)
+                this.token = token
+                this.user = user
+                localStorage.setItem(TOKEN_KEY, token)
+                localStorage.setItem(USER_KEY, JSON.stringify(user))
+            } catch (e) {
+                this.error = e?.message || 'Registration error'
+                this.resetStorage()
+                throw e
+            } finally {
+                this.loading = false
+            }
+        },
+        updateProfile(patch) {
+            if (!this.user) return
+            const next = { ...this.user, ...(patch || {}) }
+            // never allow changing email/password from profile editor
+            next.email = this.user.email
+            if ('password' in next) delete next.password
+            // if student, remove companyName
+            if (next.role === 'student') {
+                delete next.companyName
+            }
+            this.user = next
+            localStorage.setItem(USER_KEY, JSON.stringify(next))
         },
         logout() {
             this.reset()
