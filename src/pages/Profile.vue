@@ -175,15 +175,15 @@ const saveEdit = () => {
 
 <style scoped>
 .profile-page {
-  min-height: 100vh;
-  background: #f5f5f5;
-  padding: 20px;
+  min-height: 92vh;
+  background: #f9f9f9;
+  padding: 20px 0px 0px 0px;
 }
 
 .breadcrumb {
   max-width: 1400px;
   margin: 0 auto 20px;
-  font-size: 14px;
+  font-size: 17px;
   color: #666;
 }
 
@@ -198,20 +198,25 @@ const saveEdit = () => {
 }
 
 .profile-container {
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
+  padding-top: 70px;
   display: grid;
   grid-template-columns: 350px 1fr;
-  gap: 10px;
+  gap: 20px;
+  transform: translateY(-4px);
 }
 
 /* Сол жақ профиль карточкасы */
 .profile-card {
   background: white;
-  border-radius: 4px;
-  padding: 30px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border-radius: 10px;
+  padding: 26px 33px 10px 33px;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.1);
   height: fit-content;
+  min-height: 330px;
+  width: 85%;
+  margin-left: auto;
 }
 
 .avatar-section {
@@ -245,20 +250,20 @@ const saveEdit = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 48px;
+  font-size: 51px;
   font-weight: 600;
   border: 3px solid #f0f0f0;
 }
 
 .avatar-section h2 {
-  font-size: 22px;
+  font-size: 25px;
   font-weight: 600;
   color: #333;
   margin: 0 0 8px;
 }
 
 .role {
-  font-size: 14px;
+  font-size: 17px;
   color: #666;
   margin: 0;
   margin-top: 10px;
@@ -288,19 +293,19 @@ const saveEdit = () => {
 }
 
 .icon {
-  font-size: 22px;
+  font-size: 25px;
   width: 32px;
   text-align: center;
 }
 
 .social-item .label {
-  font-size: 12px;
+  font-size: 15px;
   color: #999;
   margin-bottom: 3px;
 }
 
 .social-item .value {
-  font-size: 14px;
+  font-size: 17px;
   color: #333;
   font-weight: 500;
   word-break: break-word;
@@ -314,9 +319,11 @@ const saveEdit = () => {
 
 .info-card {
   background: white;
-  border-radius: 4px;
-  padding: 30px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border-radius: 10px;
+  padding: 35px;
+  box-shadow: 0 1px 10px rgba(0,0,0,0.1);
+  width: 93%;
+  min-height: 300px;
 }
 
 .info-header {
@@ -330,7 +337,7 @@ const saveEdit = () => {
 }
 
 .info-card h3 {
-  font-size: 20px;
+  font-size: 23px;
   font-weight: 600;
   color: #333;
   margin: 0;
@@ -385,13 +392,13 @@ const saveEdit = () => {
 }
 
 .info-row .label {
-  font-size: 14px;
+  font-size: 17px;
   color: #666;
   font-weight: 500;
 }
 
 .info-row .value {
-  font-size: 14px;
+  font-size: 17px;
   color: #333;
   font-weight: 600;
   text-align: right;
@@ -403,7 +410,7 @@ const saveEdit = () => {
   padding: 8px 10px;
   border: 1px solid #e5e5e5;
   border-radius: 6px;
-  font-size: 14px;
+  font-size: 17px;
   font-weight: 500;
   outline: none;
 }
@@ -431,11 +438,11 @@ const saveEdit = () => {
   }
 
   .avatar-section h2 {
-    font-size: 20px;
+    font-size: 23px;
   }
 
   .info-card h3 {
-    font-size: 18px;
+    font-size: 21px;
   }
 }
 </style>

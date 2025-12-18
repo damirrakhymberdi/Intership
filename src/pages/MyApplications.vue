@@ -64,13 +64,15 @@
   <style scoped>
   .page {
     min-height: 100vh;
-    background: #ebebeb;
+    background: #f8f8f8;
     padding: 2rem 1rem;
   }
   
   .container {
     max-width: 1100px;
     margin: 0 auto;
+    
+
   }
   
   h1 {
@@ -84,8 +86,13 @@
     text-align: center;
     padding: 3rem;
     background: white;
-    border-radius: 8px;
-    border: 1px solid #e5e5e5;
+    border-radius: 10px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 30vh;
+    box-shadow: 0 1px 10px rgba(105, 105, 105, 0.129);
     color: #666;
   }
   
@@ -101,6 +108,7 @@
     border-radius: 5px;
     padding: 1.5rem;
     transition: border-color 0.2s;
+
   }
   
   .card:hover {
