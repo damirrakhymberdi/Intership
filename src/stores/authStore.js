@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { loginRequest, registerRequest } from '@/api/auth'
+import { loginRequest, registerRequest, updateUserRequest } from '@/api/auth'
 
 const TOKEN_KEY = 'token'
 const USER_KEY = 'user'
@@ -63,18 +63,40 @@ export const useAuthStore = defineStore('auth', {
                 this.loading = false
             }
         },
-        updateProfile(patch) {
+        async updateProfile(patch) {
             if (!this.user) return
-            const next = { ...this.user, ...(patch || {}) }
+
+            const incoming = { ...(patch || {}) }
+
             // never allow changing email/password from profile editor
-            next.email = this.user.email
-            if ('password' in next) delete next.password
-            // if student, remove companyName
-            if (next.role === 'student') {
-                delete next.companyName
+            if ('email' in incoming) delete incoming.email
+            if ('password' in incoming) delete incoming.password
+
+            // role can be changed only by admin user
+            if ('role' in incoming && this.user?.role !== 'admin') {
+                delete incoming.role
             }
-            this.user = next
-            localStorage.setItem(USER_KEY, JSON.stringify(next))
+
+            // if next role is student, remove companyName
+            const nextRole = incoming.role || this.user?.role
+            if (nextRole === 'student') {
+                if ('companyName' in incoming) delete incoming.companyName
+            }
+
+            // do not send undefined values to API
+            const payload = Object.fromEntries(
+                Object.entries(incoming).filter(([, v]) => v !== undefined)
+            )
+
+            // Persist to MockAPI
+            const updated = await updateUserRequest(this.user.id, payload)
+
+            // Ensure email never changes locally even if API returns something odd
+            updated.email = this.user.email
+            if ('password' in updated) delete updated.password
+
+            this.user = updated
+            localStorage.setItem(USER_KEY, JSON.stringify(updated))
         },
         logout() {
             this.reset()

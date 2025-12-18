@@ -57,6 +57,22 @@ export const useApplicationsStore = defineStore('applications', {
       this.list = this.list.filter((a) => a.id !== id)
       this.persist()
     },
+    removeForStudent(appId, studentId) {
+      this.ensureLoaded()
+      this.list = this.list.filter(
+        (a) => !(String(a.id) === String(appId) && String(a.studentId) === String(studentId))
+      )
+      this.persist()
+    },
+    clearForStudent(studentId, { status } = {}) {
+      this.ensureLoaded()
+      this.list = this.list.filter((a) => {
+        if (String(a.studentId) !== String(studentId)) return true
+        if (!status) return false
+        return String(a.status) !== String(status)
+      })
+      this.persist()
+    },
   },
 })
 

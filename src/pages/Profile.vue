@@ -42,7 +42,9 @@
                 Edit profile
               </button>
               <template v-else>
-                <button class="btn-save" type="button" @click="saveEdit">Save</button>
+                <button class="btn-save" type="button" :disabled="saving" @click="saveEdit">
+                  {{ saving ? 'Saving...' : 'Save' }}
+                </button>
                 <button class="btn-cancel" type="button" @click="cancelEdit">Cancel</button>
               </template>
             </div>
@@ -91,6 +93,33 @@
         </div>
       </div>
     </div>
+
+    <!-- Description box (students only, below profile-card + info-card) -->
+    <div v-if="showDescription" class="description-section">
+      <div class="description-card">
+        <div class="description-header">
+          <h3>Description</h3>
+          <p class="description-hint">A short description about you (saved to your profile)</p>
+        </div>
+
+        <div class="description-body">
+          <template v-if="editing">
+            <textarea
+              v-model="draft.description"
+              rows="6"
+              placeholder="Write something about yourself..."
+            />
+          </template>
+          <template v-else>
+            <p class="description-text">
+              {{ user?.description?.trim() ? user.description : 'No description yet.' }}
+            </p>
+          </template>
+
+          <p v-if="saveError" class="save-error">{{ saveError }}</p>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -102,16 +131,20 @@ const auth = useAuthStore()
 
 const user = computed(() => auth.user)
 const editing = ref(false)
+const saving = ref(false)
+const saveError = ref('')
 const draft = reactive({
   name: '',
   role: 'student',
   companyName: '',
+  description: '',
 })
 
 const syncDraft = () => {
   draft.name = user.value?.name || ''
   draft.role = user.value?.role || 'student'
   draft.companyName = user.value?.companyName || ''
+  draft.description = user.value?.description || ''
 }
 
 const canEditRole = computed(() => user.value?.role === 'admin')
@@ -123,6 +156,12 @@ const showCompanyRow = computed(() => {
   const baseRole = user.value?.role
   const role = editing.value && canEditRole.value ? draft.role : baseRole
   return role === 'company'
+})
+
+const showDescription = computed(() => {
+  const baseRole = user.value?.role
+  const role = editing.value && canEditRole.value ? draft.role : baseRole
+  return role === 'student'
 })
 
 const getRoleName = (role) => {
@@ -145,31 +184,45 @@ watch(
   () => draft.role,
   (r) => {
     if (r === 'student') draft.companyName = ''
+    if (r !== 'student') draft.description = ''
   }
 )
 
 const startEdit = () => {
   syncDraft()
+  saveError.value = ''
   editing.value = true
 }
 
 const cancelEdit = () => {
   editing.value = false
+  saveError.value = ''
   syncDraft()
 }
 
-const saveEdit = () => {
+const saveEdit = async () => {
+  if (saving.value) return
+  saving.value = true
+  saveError.value = ''
   const baseRole = user.value?.role || 'student'
   const nextRole = canEditRole.value ? draft.role : baseRole
   const nextCompanyName =
     nextRole === 'company' ? (draft.companyName?.trim() || '') : undefined
 
-  auth.updateProfile({
-    name: draft.name?.trim() || 'User',
-    ...(canEditRole.value ? { role: nextRole } : {}),
-    companyName: nextCompanyName,
-  })
-  editing.value = false
+  try {
+    await auth.updateProfile({
+      name: draft.name?.trim() || 'User',
+      ...(canEditRole.value ? { role: nextRole } : {}),
+      companyName: nextCompanyName,
+      // description is only for students
+      description: nextRole === 'student' ? (draft.description || '') : '',
+    })
+    editing.value = false
+  } catch (e) {
+    saveError.value = e?.message || 'Failed to save profile'
+  } finally {
+    saving.value = false
+  }
 }
 </script>
 
@@ -200,7 +253,7 @@ const saveEdit = () => {
 .profile-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding-top: 70px;
+  padding-top: 0px;
   display: grid;
   grid-template-columns: 350px 1fr;
   gap: 20px;
@@ -359,6 +412,11 @@ const saveEdit = () => {
   cursor: pointer;
 }
 
+.btn-save:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
 .btn-edit {
   background: #e8f5e9;
   color: #2e7d32;
@@ -427,6 +485,66 @@ const saveEdit = () => {
   }
 }
 
+.description-section {
+  max-width: 1085px;
+  margin: 18px auto 0;
+}
+
+.description-card {
+  background: white;
+  border-radius: 10px;
+  padding: 28px 35px;
+  box-shadow: 0 1px 10px rgba(0,0,0,0.1);
+}
+
+.description-header h3 {
+  font-size: 23px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.description-hint {
+  margin: 6px 0 0;
+  font-size: 15px;
+  color: #777;
+}
+
+.description-body {
+  margin-top: 16px;
+}
+
+.description-body textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e5e5e5;
+  border-radius: 6px;
+  font-size: 17px;
+  font-weight: 500;
+  outline: none;
+  resize: vertical;
+}
+
+.description-body textarea:focus {
+  border-color: #4caf4f;
+  box-shadow: 0 0 0 3px rgba(76, 175, 79, 0.12);
+}
+
+.description-text {
+  margin: 0;
+  font-size: 17px;
+  color: #333;
+  font-weight: 500;
+  white-space: pre-wrap;
+}
+
+.save-error {
+  margin: 12px 0 0;
+  color: #b91c1c;
+  font-size: 15px;
+  font-weight: 600;
+}
+
 @media (max-width: 768px) {
   .profile-page {
     padding: 15px;
@@ -437,11 +555,19 @@ const saveEdit = () => {
     padding: 20px;
   }
 
+  .description-card {
+    padding: 20px;
+  }
+
   .avatar-section h2 {
     font-size: 23px;
   }
 
   .info-card h3 {
+    font-size: 21px;
+  }
+
+  .description-header h3 {
     font-size: 21px;
   }
 }

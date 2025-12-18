@@ -82,11 +82,11 @@ onMounted(() => {
 .page {
   min-height: 100vh;
   background: #f5f5f5;
-  padding: 15px 0;
+  padding: 0px 0;
 }
 
 .container {
-  max-width: 1500px;
+  max-width: 100%;
   margin: 0 auto;
 }
 

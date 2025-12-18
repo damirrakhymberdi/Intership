@@ -21,7 +21,15 @@
           <tbody>
             <tr v-for="app in apps" :key="app.id">
               <td>{{ app.internshipTitle }}</td>
-              <td>{{ app.studentName }}</td>
+              <td>
+                <button
+                  class="student-link"
+                  type="button"
+                  @click="openStudent(app.studentId)"
+                >
+                  {{ app.studentName }}
+                </button>
+              </td>
               <td>
                 <span :class="['status', app.status]">
                   {{ getStatusText(app.status) }}
@@ -49,11 +57,13 @@
 
 <script setup>
 import { computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useApplicationsStore } from '@/stores/applicationsStore'
 import { useAuthStore } from '@/stores/authStore'
 
 const appsStore = useApplicationsStore()
 const auth = useAuthStore()
+const router = useRouter()
 
 const apps = computed(() =>
   appsStore.list.filter(
@@ -65,6 +75,11 @@ const apps = computed(() =>
 
 const setStatus = (id, status) => {
   appsStore.updateStatus(id, status)
+}
+
+const openStudent = (studentId) => {
+  if (!studentId) return
+  router.push(`/students/${studentId}`)
 }
 
 const getStatusText = (status) => {
@@ -150,6 +165,21 @@ td {
   border-right: 1px solid #e0e0e0;
   font-size: 14px;
   color: #444;
+}
+
+.student-link {
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: #2e7d32;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.student-link:hover {
+  color: #1b5e20;
 }
 
 th:last-child,

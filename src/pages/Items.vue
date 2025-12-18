@@ -47,18 +47,22 @@
           <section class="filters-section">
             <div class="filters-grid">
               <div class="filter-group">
-                <select v-model="status">
-                  <option value="">All statuses</option>
-                  <option value="active">Active</option>
-                  <option value="closed">Closed</option>
-                </select>
+                <div class="select-wrap">
+                  <select v-model="status">
+                    <option value="">All statuses</option>
+                    <option value="active">Active</option>
+                    <option value="closed">Closed</option>
+                  </select>
+                </div>
               </div>
               <div class="filter-group">
-                <select v-model="type">
-                  <option value="">All types</option>
-                  <option value="online">Online</option>
-                  <option value="offline">Offline</option>
-                </select>
+                <div class="select-wrap">
+                  <select v-model="type">
+                    <option value="">All types</option>
+                    <option value="online">Online</option>
+                    <option value="offline">Offline</option>
+                  </select>
+                </div>
               </div>
             </div>
           </section>
@@ -513,6 +517,51 @@ onMounted(() => {
   font-size: 15px;
   cursor: pointer;
   transition: all 0.2s;
+}
+
+.select-wrap {
+  position: relative;
+}
+
+.select-wrap::after {
+  content: '▾';
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%) rotate(0deg);
+  transition: transform 180ms ease, color 180ms ease, opacity 180ms ease;
+  color: #4caf4f;
+  opacity: 0.9;
+  pointer-events: none;
+  font-size: 14px;
+}
+
+.select-wrap:focus-within::after {
+  transform: translateY(-50%) rotate(180deg);
+  color: #2e7d32;
+  opacity: 1;
+}
+
+.select-wrap select {
+  -webkit-appearance: none;
+  appearance: none;
+  padding-right: 42px;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease,
+    background-color 180ms ease;
+}
+
+.select-wrap select:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(17, 24, 39, 0.08);
+  border-color: rgba(76, 175, 79, 0.55);
+}
+
+.select-wrap select:focus {
+  outline: none;
+  transform: translateY(-1px) scale(1.01);
+  border-color: #4caf4f;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(76, 175, 79, 0.14), 0 10px 22px rgba(17, 24, 39, 0.1);
 }
 
 .filter-group select:hover {

@@ -8,6 +8,7 @@ import Profile from '@/pages/Profile.vue'
 import Admin from '@/pages/Admin.vue'
 import MyApplications from '@/pages/MyApplications.vue'
 import CompanyApplications from '@/pages/CompanyApplications.vue'
+import StudentProfile from '@/pages/StudentProfile.vue'
 import NotFound from '@/pages/NotFound.vue'
 import MainLayout from '@/layouts/MainLayout.vue'
 import { useAuthStore } from '@/stores/authStore'
@@ -54,6 +55,12 @@ const routes = [
                 name: 'Profile',
                 component: Profile,
                 meta: { requiresAuth: true },
+            },
+            {
+                path: '/students/:id',
+                name: 'StudentProfile',
+                component: StudentProfile,
+                meta: { requiresAuth: true, requiresCompany: true },
             },
             {
                 path: '/admin',
